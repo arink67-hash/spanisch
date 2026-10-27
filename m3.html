@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Indefinido e imperfecto – El mundo en 2050</title>
+<style>
+:root{
+  --bg:#f6f3ee; --card:#ffffff; --ink:#1f2328; --muted:#5f6670; --line:#ddd6cb;
+  --accent:#b8432f; --accent-soft:#f6e3de; --blue:#2f5f8f; --blue-soft:#e3edf7;
+  --ok:#1f7a3d; --ok-soft:#e1f3e6; --bad:#b3261e; --bad-soft:#fbe4e2; --warn:#a15c00; --warn-soft:#fdf0d8;
+  --radius:12px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+header{background:var(--card);border-bottom:1px solid var(--line)}
+.wrap{max-width:900px;margin:0 auto;padding:0 16px}
+.top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;padding:14px 0 6px}
+.top h1{font-size:1.35rem;margin:0;line-height:1.25}
+.top .curso{font-size:.85rem;color:var(--muted)}
+.score{font-weight:700;background:var(--blue-soft);color:var(--blue);border-radius:999px;padding:4px 14px;font-size:.95rem;white-space:nowrap}
+.intro{color:var(--muted);font-style:italic;margin:2px 0 10px;font-size:.95rem}
+.levels{display:flex;gap:8px;flex-wrap:wrap;padding-bottom:12px}
+.levels button{flex:1 1 180px;border:2px solid var(--line);background:var(--card);border-radius:var(--radius);padding:8px 10px;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.levels button b{display:block;font-size:.95rem}
+.levels button span{font-size:.8rem;color:var(--muted)}
+.levels button[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.tabs{display:flex;gap:6px;margin:16px 0 0;flex-wrap:wrap}
+.tabs button{font:inherit;font-size:.95rem;border:1px solid var(--line);border-bottom:none;background:#ece7df;padding:8px 14px;border-radius:10px 10px 0 0;cursor:pointer;color:var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--card);font-weight:700}
+.tabs .pts{font-size:.8rem;color:var(--muted);margin-left:4px}
+main .card{background:var(--card);border:1px solid var(--line);border-radius:0 var(--radius) var(--radius) var(--radius);padding:16px 18px 20px;margin-bottom:28px}
+h2{font-size:1.15rem;margin:0 0 4px}
+.instr{color:var(--muted);margin:0 0 12px;font-size:.95rem}
+.bank{position:sticky;top:0;z-index:5;background:var(--blue-soft);border:1px dashed var(--blue);border-radius:var(--radius);padding:10px;margin:0 0 14px;display:flex;flex-wrap:wrap;gap:8px;min-height:52px}
+.bank .lbl{width:100%;font-size:.8rem;color:var(--blue);font-weight:600}
+.chip{touch-action:none;user-select:none;-webkit-user-select:none;background:#fff;border:2px solid var(--blue);color:var(--blue);border-radius:999px;padding:3px 12px;font-weight:600;cursor:grab}
+.chip.sel{background:var(--blue);color:#fff}
+.chip.used{display:none}
+.ghost{position:fixed;pointer-events:none;z-index:100;opacity:.9;transform:translate(-50%,-60%);box-shadow:0 6px 18px rgba(0,0,0,.2)}
+ol.items{padding-left:1.6em;margin:0}
+ol.items li{margin:0 0 10px}
+.story p{margin:0 0 14px;line-height:2.1}
+.gap{display:inline-block;min-width:7.5em;border-bottom:2px solid var(--ink);text-align:center;padding:0 6px;margin:0 2px;font-weight:600;cursor:pointer;border-radius:4px 4px 0 0;line-height:1.5;vertical-align:baseline}
+.gap.empty{color:transparent}
+.gap.hover{background:var(--blue-soft)}
+.gap .n{font-size:.7rem;color:var(--muted);font-weight:400;margin-right:4px}
+input.gap{font:inherit;font-weight:600;border:none;border-bottom:2px solid var(--ink);background:#fbfaf7;width:8.5em;cursor:text;text-align:left;outline:none}
+input.gap:focus{background:var(--blue-soft)}
+.inf{font-style:italic;color:var(--muted);font-size:.92em}
+.num{font-size:.75rem;color:var(--muted)}
+.gap.ok{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.gap.bad{background:var(--bad-soft);border-color:var(--bad);color:var(--bad)}
+.gap.warn{background:var(--warn-soft);border-color:var(--warn);color:var(--warn)}
+.gap.sol{color:#d00000 !important;background:transparent;border-color:#d00000}
+.why{display:inline-block;font-size:.72rem;background:var(--warn-soft);color:var(--warn);border-radius:6px;padding:0 6px;margin-left:4px;line-height:1.6;font-weight:600;vertical-align:middle}
+.actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center}
+.actions button{font:inherit;font-size:.95rem;border-radius:10px;padding:8px 14px;cursor:pointer;border:2px solid var(--accent);background:var(--accent);color:#fff;font-weight:600}
+.actions button.sec{background:#fff;color:var(--accent)}
+.result{font-weight:700;margin-left:auto}
+.result.good{color:var(--ok)} .result.mid{color:var(--warn)} .result.low{color:var(--bad)}
+.pop{position:absolute;z-index:50;background:#fff;border:1px solid var(--line);border-radius:12px;box-shadow:0 10px 28px rgba(0,0,0,.18);padding:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px;min-width:220px}
+.pop button{font:inherit;font-weight:600;border:2px solid var(--blue);color:var(--blue);background:#fff;border-radius:999px;padding:5px 10px;cursor:pointer}
+.pop button:hover{background:var(--blue-soft)}
+details.help{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:10px 16px;margin:16px 0 0}
+details.help summary{cursor:pointer;font-weight:700}
+.help-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(250px,1fr));gap:14px;margin-top:10px;font-size:.9rem}
+.help-grid h3{font-size:.95rem;margin:0 0 4px}
+.help-grid table{border-collapse:collapse;width:100%}
+.help-grid td{border-bottom:1px solid var(--line);padding:2px 4px}
+.tag-i{color:var(--accent);font-weight:700} .tag-p{color:var(--blue);font-weight:700}
+.note{font-size:.8rem;color:var(--muted);margin:6px 0 0}
+label.acc{font-size:.85rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+footer{color:var(--muted);font-size:.8rem;text-align:center;padding:0 0 24px}
+@media (max-width:560px){ html,body{font-size:16px} .gap{min-width:6em} input.gap{width:7.5em} }
+</style>
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="top">
+      <div>
+        <div class="curso">curso: G-SN27A · Profesiones en el futuro – El mundo en el año 2050</div>
+        <h1>Indefinido e imperfecto</h1>
+      </div>
+      <div class="score" id="total">Puntos: 0 / 30</div>
+    </div>
+    <p class="intro">Imagínate: estamos en el año 2050. Miramos hacia atrás y hablamos de los años desde 2026. ¿Qué pasó? ¿Cómo era la vida entonces?</p>
+    <div class="levels" role="group" aria-label="Nivel">
+      <button data-level="arrastrar" aria-pressed="true"><b>Nivel 1 · Arrastrar</b><span>Zieh die Form aus dem Kasten in die Lücke (oder: antippen, dann Lücke antippen)</span></button>
+      <button data-level="elegir" aria-pressed="false"><b>Nivel 2 · Elegir</b><span>Tippe auf die Lücke und wähle aus 4 Formen</span></button>
+      <button data-level="escribir" aria-pressed="false"><b>Nivel 3 · Escribir</b><span>Schreib die Form selbst in die Lücke</span></button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <details class="help">
+    <summary>Ayuda – Formen und Regeln</summary>
+    <div class="help-grid">
+      <div>
+        <h3><span class="tag-i">Indefinido</span> – Was passierte?</h3>
+        <p class="note" style="margin:0 0 6px">Abgeschlossene Handlung, Handlungskette, etwas tritt plötzlich ein. Signalwörter: <i>ayer, el año pasado, en 2030, un día, de repente</i></p>
+        <table>
+          <tr><td></td><td>-ar</td><td>-er / -ir</td></tr>
+          <tr><td>yo</td><td>-é</td><td>-í</td></tr>
+          <tr><td>tú</td><td>-aste</td><td>-iste</td></tr>
+          <tr><td>él/ella</td><td>-ó</td><td>-ió</td></tr>
+          <tr><td>nosotros</td><td>-amos</td><td>-imos</td></tr>
+          <tr><td>vosotros</td><td>-asteis</td><td>-isteis</td></tr>
+          <tr><td>ellos</td><td>-aron</td><td>-ieron</td></tr>
+        </table>
+        <p class="note">Unregelmäßig: ir/ser → fui, fue · hacer → hizo · tener → tuve · poder → pude · estar → estuve · dar → di, dio · ver → vi, vio · saber → supe · <b>empezar → empecé</b></p>
+      </div>
+      <div>
+        <h3><span class="tag-p">Imperfecto</span> – Wie war es?</h3>
+        <p class="note" style="margin:0 0 6px">Beschreibung, Zustand, Gewohnheit, Hintergrund. Signalwörter: <i>siempre, todos los días, normalmente, a menudo, entonces, mientras</i></p>
+        <table>
+          <tr><td></td><td>-ar</td><td>-er / -ir</td></tr>
+          <tr><td>yo</td><td>-aba</td><td>-ía</td></tr>
+          <tr><td>tú</td><td>-abas</td><td>-ías</td></tr>
+          <tr><td>él/ella</td><td>-aba</td><td>-ía</td></tr>
+          <tr><td>nosotros</td><td>-ábamos</td><td>-íamos</td></tr>
+          <tr><td>vosotros</td><td>-abais</td><td>-íais</td></tr>
+          <tr><td>ellos</td><td>-aban</td><td>-ían</td></tr>
+        </table>
+        <p class="note">Nur 3 unregelmäßige Verben: ser → era · ir → iba · ver → veía · (hay → había)</p>
+      </div>
+    </div>
+  </details>
+
+  <div class="tabs" role="tablist" id="tabs"></div>
+  <div id="panels"></div>
+</main>
+<footer>Spanisch · G-SN27A · Indefinido e imperfecto (M3) · funktioniert auch offline</footer>
+
+<script>
+/* Lücken-Syntax: {Infinitiv|Lösung|Falsch1,Falsch2,Falsch3|Begründung (optional)} */
+const EXERCISES = [
+  {
+    id:'e1', tab:'1 · Indefinido',
+    title:'1. ¿Qué pasó? – Completa con el pretérito indefinido.',
+    type:'list',
+    extra:['terminaba','hacía','íbamos','tenía'],
+    items:[
+      'En 2027 mi hermana {terminar|terminó|terminaba,terminé,terminaron} el bachillerato y {empezar|empezó|empezaba,empecé,empezaron} a estudiar Inteligencia Artificial.',
+      'En 2030 los primeros taxis sin conductor {llegar|llegaron|llegaban,llegó,llegamos} a Bremervörde.',
+      'Un día mi robot de cocina {hacer|hizo|hacía,hice,hicieron} una paella sin mi ayuda.',
+      'En 2033 nosotros {ir|fuimos|íbamos,fueron,fui} de vacaciones a una estación espacial.',
+      'El año pasado yo {tener|tuve|tenía,tuvo,tuvimos} una entrevista de trabajo con un robot.',
+      'En 2035 la Unión Europea {prohibir|prohibió|prohibía,prohibí,prohibieron} la venta de coches nuevos de gasolina.',
+      '¿Cuándo {poder, tú|pudiste|podías,pudo,pudisteis} trabajar desde casa por primera vez?',
+      'Ayer la doctora virtual me {dar|dio|daba,di,dieron} los resultados en dos minutos.',
+      '¿{ver, vosotros|Visteis|Veíais,Vieron,Vimos} el último Mundial con gafas de realidad virtual?'
+    ]
+  },
+  {
+    id:'e2', tab:'2 · Imperfecto',
+    title:'2. ¿Cómo era la vida en 2026? – Completa con el pretérito imperfecto.',
+    type:'list',
+    extra:['fue','hubo','tuvimos','vi'],
+    items:[
+      'En 2026 la gente todavía {ir|iba|fue,iban,íbamos} al supermercado para hacer la compra.',
+      'Los coches {ser|eran|fueron,era,éramos} muy ruidosos y {contaminar|contaminaban|contaminaron,contaminaba,contaminábamos} mucho el aire.',
+      'En aquella época no {haber|había|hubo,habían,hay} robots en los hospitales.',
+      'Nosotros {tener|teníamos|tuvimos,tenían,tenía} clase en el instituto todos los días.',
+      'Yo {ver|veía|vi,veían,veíamos} series en el móvil todas las noches.',
+      '¿{leer, tú|Leías|Leíste,Leía,Leíais} todavía libros de papel?',
+      'Mis abuelos {vivir|vivían|vivieron,vivía,vivíamos} en un pueblo y {necesitar|necesitaban|necesitaron,necesitaba,necesitábamos} el coche para todo.',
+      'Vosotros {pagar|pagabais|pagasteis,pagaban,pagábamos} a menudo con dinero en efectivo.'
+    ]
+  },
+  {
+    id:'e3', tab:'3 · Mezcla',
+    title:'3. Una profesión del futuro – ¿Indefinido o imperfecto?',
+    instr:'Lee la historia de Nuria y completa con la forma correcta del pasado. Nach dem Prüfen erklärt dir ein Hinweis bei falschen Lücken, warum diese Zeitform stehen muss.',
+    type:'story',
+    extra:['tuve','supe','fui','llevaba','podía'],
+    items:[
+      'Me llamo Nuria. Estamos en 2050 y trabajo como agricultora urbana en una granja vertical en Madrid. ¿Cómo empezó todo? En 2026 yo {tener|tenía|tuve,tenían,tengo|Alter / Zustand → Imperfecto} 18 años y no {saber|sabía|supe,sabían,sé|Zustand (nicht wissen) → Imperfecto} qué profesión quería tener. Todos los días {ir|iba|fui,fue,iban|Gewohnheit (todos los días) → Imperfecto} al instituto en metro.',
+      'Un día de marzo, nuestra profesora nos {llevar|llevó|llevaba,llevé,llevaron|einmalige Handlung (un día de marzo) → Indefinido} a una feria de profesiones del futuro. Allí {haber|había|hubo,habían,hay|Beschreibung: es gab → Imperfecto (immer Singular!)} muchos robots y drones. Mientras mis amigos {mirar|miraban|miraron,miraba,mirábamos|Hintergrundhandlung mit „mientras“ → Imperfecto} los videojuegos, yo {conocer|conocí|conocía,conoció,conocimos|neue Handlung tritt ein (kennenlernen) → Indefinido} a Carmen, una ingeniera agrónoma, en un puesto lleno de plantas.',
+      'Aquella noche no {poder|pude|podía,pudo,puedo|abgeschlossenes Ereignis (aquella noche) → Indefinido} dormir porque {estar|estaba|estuve,estuvo,estaban|Zustand / Gefühl (nervös sein) → Imperfecto} muy nerviosa. En 2027 {empezar|empecé|empezaba,empezó,empiezo|Beginn einer Handlung, Jahreszahl → Indefinido (z → c!)} a estudiar agronomía en Valencia. ¡Y hoy soy muy feliz!'
+    ],
+    vocab:'la agricultora urbana – Stadtlandwirtin · la granja vertical – vertikale Farm · la feria – Messe · el puesto – Stand · la ingeniera agrónoma – Agraringenieurin'
+  }
+];
+
+let level = 'arrastrar';
+let active = 0;
+const scores = {};
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const strip = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '');
+const norm = s => s.trim().toLowerCase().replace(/\s+/g, ' ');
+
+function parse(text){
+  const parts = [];
+  text.split(/(\{[^}]+\})/).forEach(p => {
+    if (!p) return;
+    if (p[0] === '{') {
+      const [inf, ans, wrong, why] = p.slice(1, -1).split('|');
+      parts.push({ inf, ans, opts: [ans, ...wrong.split(',')], why });
+    } else parts.push(p);
+  });
+  return parts;
+}
+
+/* ---------- Rendering ---------- */
+const tabsEl = document.getElementById('tabs'), panelsEl = document.getElementById('panels');
+function renderAll(){
+  tabsEl.innerHTML = ''; panelsEl.innerHTML = '';
+  EXERCISES.forEach((ex, i) => {
+    const t = document.createElement('button');
+    t.setAttribute('role', 'tab'); t.setAttribute('aria-selected', i === active);
+    t.innerHTML = ex.tab + `<span class="pts" id="pts-${ex.id}"></span>`;
+    t.onclick = () => { active = i; renderVisibility(); };
+    tabsEl.appendChild(t);
+    panelsEl.appendChild(renderExercise(ex));
+  });
+  Object.keys(scores).forEach(k => delete scores[k]);
+  updateTotal(); renderVisibility();
+}
+function renderVisibility(){
+  [...tabsEl.children].forEach((t, i) => t.setAttribute('aria-selected', i === active));
+  [...panelsEl.children].forEach((p, i) => p.hidden = i !== active);
+}
+
+function renderExercise(ex){
+  const card = document.createElement('section'); card.className = 'card'; card.id = ex.id;
+  card.innerHTML = `<h2>${ex.title}</h2>` + (ex.instr ? `<p class="instr">${ex.instr}</p>` : '');
+  const gaps = [];
+  let bank = null;
+  if (level === 'arrastrar') {
+    bank = document.createElement('div'); bank.className = 'bank';
+    bank.innerHTML = '<div class="lbl">Formen – Achtung: Es sind auch ein paar falsche dabei!</div>';
+    card.appendChild(bank);
+  }
+  if (level === 'escribir') {
+    const l = document.createElement('label'); l.className = 'acc';
+    l.innerHTML = '<input type="checkbox" checked> Akzente müssen stimmen (sonst: orange = „Akzent fehlt“)';
+    card.appendChild(l); card._acc = l.querySelector('input');
+  }
+  const body = document.createElement(ex.type === 'list' ? 'ol' : 'div');
+  body.className = ex.type === 'list' ? 'items' : 'story';
+  let n = 0;
+  ex.items.forEach(item => {
+    const row = document.createElement(ex.type === 'list' ? 'li' : 'p');
+    parse(item).forEach(part => {
+      if (typeof part === 'string') { row.appendChild(document.createTextNode(part)); return; }
+      n++;
+      if (ex.type === 'story') { const s = document.createElement('span'); s.className = 'num'; s.textContent = `(${n}) `; row.appendChild(s); }
+      const g = makeGap(part, card);
+      gaps.push(g); row.appendChild(g);
+      const inf = document.createElement('span'); inf.className = 'inf'; inf.textContent = ` (${part.inf}) `;
+      row.appendChild(inf);
+    });
+    body.appendChild(row);
+  });
+  card.appendChild(body);
+  if (ex.vocab) { const v = document.createElement('p'); v.className = 'note'; v.textContent = 'Vokabelhilfe: ' + ex.vocab; card.appendChild(v); }
+
+  if (bank) {
+    const words = shuffle([...gaps.map(g => g._data.ans), ...ex.extra]);
+    words.forEach((w, i) => bank.appendChild(makeChip(w, card)));
+  }
+  const act = document.createElement('div'); act.className = 'actions';
+  act.innerHTML = '<button data-a="check">Comprobar</button><button class="sec" data-a="sol">Solución</button><button class="sec" data-a="reset">Otra vez</button><span class="result"></span>';
+  act.onclick = e => {
+    const a = e.target.dataset.a; if (!a) return;
+    if (a === 'check') check(ex, card, gaps);
+    if (a === 'sol') showSolution(gaps, card);
+    if (a === 'reset') { const fresh = renderExercise(ex); card.replaceWith(fresh); delete scores[ex.id]; updateTotal(); renderVisibility(); }
+  };
+  card.appendChild(act);
+  card._gaps = gaps;
+  return card;
+}
+
+function makeGap(data, card){
+  let g;
+  if (level === 'escribir') {
+    g = document.createElement('input'); g.className = 'gap'; g.type = 'text';
+    g.autocomplete = 'off'; g.autocapitalize = 'off'; g.spellcheck = false; g.setAttribute('aria-label', data.inf);
+    g.addEventListener('input', () => clearMark(g));
+  } else {
+    g = document.createElement('span'); g.className = 'gap empty'; g.tabIndex = 0; g.textContent = '—';
+    g.setAttribute('role', 'button'); g.setAttribute('aria-label', 'Lücke: ' + data.inf);
+    if (level === 'arrastrar') g.addEventListener('click', () => gapTapDrag(g, card));
+    if (level === 'elegir') g.addEventListener('click', e => openPop(g, data));
+    g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); g.click(); } });
+  }
+  g._data = data;
+  return g;
+}
+function value(g){ return g.tagName === 'INPUT' ? g.value : (g.dataset.val || ''); }
+function setVal(g, v){ g.dataset.val = v; g.textContent = v || '—'; g.classList.toggle('empty', !v); clearMark(g); }
+function clearMark(g){ g.classList.remove('ok','bad','warn','sol'); const w = g.nextSibling && g.nextSibling.nextSibling; if (w && w.classList && w.classList.contains('why')) w.remove(); }
+
+/* ---------- Nivel 1: Drag & Drop + Tippen ---------- */
+let selected = null;
+function makeChip(word, card){
+  const c = document.createElement('span'); c.className = 'chip'; c.textContent = word; c.tabIndex = 0;
+  let sx, sy, ghost = null, over = null;
+  c.addEventListener('pointerdown', e => {
+    if (e.button > 0) return;
+    sx = e.clientX; sy = e.clientY; c.setPointerCapture(e.pointerId);
+  });
+  c.addEventListener('pointermove', e => {
+    if (sx === undefined) return;
+    if (!ghost && Math.hypot(e.clientX - sx, e.clientY - sy) > 6) {
+      ghost = c.cloneNode(true); ghost.classList.add('ghost'); document.body.appendChild(ghost);
+    }
+    if (ghost) {
+      ghost.style.left = e.clientX + 'px'; ghost.style.top = e.clientY + 'px';
+      const el = document.elementFromPoint(e.clientX, e.clientY);
+      const g = el && el.closest && el.closest('.gap');
+      if (over && over !== g) over.classList.remove('hover');
+      over = (g && card.contains(g)) ? g : null;
+      if (over) over.classList.add('hover');
+    }
+  });
+  const end = () => {
+    if (sx === undefined) return;
+    if (ghost) { ghost.remove(); ghost = null; if (over) { over.classList.remove('hover'); place(over, c, card); over = null; } }
+    else toggleSelect(c, card);
+    sx = undefined;
+  };
+  c.addEventListener('pointerup', end);
+  c.addEventListener('pointercancel', () => { if (ghost) ghost.remove(); ghost = null; sx = undefined; if (over) over.classList.remove('hover'); });
+  c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleSelect(c, card); } });
+  return c;
+}
+function toggleSelect(c, card){
+  card.querySelectorAll('.chip.sel').forEach(x => x !== c && x.classList.remove('sel'));
+  c.classList.toggle('sel'); selected = c.classList.contains('sel') ? c : null;
+}
+function place(g, chip, card){
+  if (g._chip) g._chip.classList.remove('used');
+  g._chip = chip; chip.classList.add('used'); chip.classList.remove('sel'); selected = null;
+  setVal(g, chip.textContent);
+}
+function gapTapDrag(g, card){
+  if (selected && card.contains(selected)) { place(g, selected, card); return; }
+  if (g._chip) { g._chip.classList.remove('used'); g._chip = null; setVal(g, ''); }
+}
+
+/* ---------- Nivel 2: Auswahl aus 4 ---------- */
+let pop = null;
+function closePop(){ if (pop) { pop.remove(); pop = null; } }
+function openPop(g, data){
+  closePop();
+  pop = document.createElement('div'); pop.className = 'pop';
+  shuffle(data.opts).forEach(o => {
+    const b = document.createElement('button'); b.textContent = o;
+    b.onclick = e => { e.stopPropagation(); setVal(g, o); closePop(); };
+    pop.appendChild(b);
+  });
+  document.body.appendChild(pop);
+  const r = g.getBoundingClientRect();
+  const left = Math.min(window.scrollX + r.left, window.scrollX + document.documentElement.clientWidth - pop.offsetWidth - 8);
+  pop.style.left = Math.max(8, left) + 'px'; pop.style.top = (window.scrollY + r.bottom + 6) + 'px';
+}
+document.addEventListener('click', e => { if (pop && !pop.contains(e.target) && !e.target.closest('.gap')) closePop(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closePop(); });
+
+/* ---------- Prüfen ---------- */
+function check(ex, card, gaps){
+  closePop();
+  let ok = 0;
+  const accStrict = card._acc ? card._acc.checked : true;
+  gaps.forEach(g => {
+    clearMark(g);
+    const v = norm(value(g)), a = norm(g._data.ans);
+    if (!v) { g.classList.add('bad'); return; }
+    if (v === a) { g.classList.add('ok'); ok++; return; }
+    if (g.tagName === 'INPUT' && strip(v) === strip(a)) {
+      if (accStrict) { g.classList.add('warn'); g.title = '¡Ojo con el acento!'; addWhy(g, '¡Ojo con el acento!'); }
+      else { g.classList.add('ok'); ok++; }
+      return;
+    }
+    g.classList.add('bad'); addWhy(g);
+  });
+  scores[ex.id] = { ok, max: gaps.length };
+  const res = card.querySelector('.result');
+  const q = ok / gaps.length;
+  res.className = 'result ' + (q >= .8 ? 'good' : q >= .5 ? 'mid' : 'low');
+  res.textContent = `${ok} / ${gaps.length} ` + (q === 1 ? '¡Perfecto! 🎉' : q >= .8 ? '¡Muy bien!' : q >= .5 ? '¡Bien! Corrige las rojas.' : '¡Ánimo! Mira la ayuda arriba.');
+  updateTotal();
+}
+function addWhy(g, txt){
+  const t = txt || g._data.why; if (!t) return;
+  const s = document.createElement('span'); s.className = 'why'; s.textContent = t;
+  const inf = g.nextSibling; inf.after(s);
+}
+function showSolution(gaps, card){
+  closePop();
+  gaps.forEach(g => {
+    if (g.tagName === 'INPUT') { g.value = g._data.ans; clearMark(g); g.classList.add('sol'); }
+    else { if (g._chip) { g._chip.classList.add('used'); } setVal(g, g._data.ans); g.classList.add('sol'); }
+  });
+  card.querySelectorAll('.chip').forEach(c => c.classList.add('used'));
+}
+function updateTotal(){
+  let ok = 0, max = 0;
+  EXERCISES.forEach(ex => {
+    const s = scores[ex.id]; const el = document.getElementById('pts-' + ex.id);
+    const m = ex.items.join('').split('{').length - 1; max += m;
+    if (s) { ok += s.ok; if (el) el.textContent = `${s.ok}/${s.max}`; } else if (el) el.textContent = '';
+  });
+  document.getElementById('total').textContent = `Puntos: ${ok} / ${max}`;
+}
+
+/* ---------- Level-Auswahl ---------- */
+document.querySelectorAll('.levels button').forEach(b => b.onclick = () => {
+  if (b.dataset.level === level) return;
+  level = b.dataset.level;
+  document.querySelectorAll('.levels button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  closePop(); selected = null; renderAll();
+});
+renderAll();
+</script>
+</body>
+</html>
